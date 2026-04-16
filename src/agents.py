@@ -26,50 +26,72 @@ COMMON_DRUGS = [
 
 def check_drug_interactions(drug_names: list[str], timeout: float = 10.0) -> dict:
     """
-    Look up drug interactions using the NLM RxNav interaction API.
-    Returns a dict summarizing interactions found between the provided drugs.
+    Look up drug interactions using the OpenFDA drug label API.
+    Searches each drug's label for mentions of the other drugs in the list.
     """
     interactions: list[dict] = []
     drugs_lower = [d.lower() for d in drug_names]
 
     for drug in drug_names:
         try:
-            rxnorm_url = f"https://rxnav.nlm.nih.gov/REST/rxcui.json?name={drug}&search=1"
-            rxnorm_resp = requests.get(rxnorm_url, timeout=timeout)
-            if rxnorm_resp.status_code != 200:
+            # Search OpenFDA drug labels for this drug's interaction section
+            url = "https://api.fda.gov/drug/label.json"
+            params = {
+                "search": f'openfda.generic_name:"{drug}" OR openfda.brand_name:"{drug}"',
+                "limit": 1,
+            }
+            resp = requests.get(url, params=params, timeout=timeout)
+            if resp.status_code != 200:
+                # Fallback: search by drug_interactions field
+                params = {"search": f'drug_interactions:"{drug}"', "limit": 1}
+                resp = requests.get(url, params=params, timeout=timeout)
+            if resp.status_code != 200:
                 continue
 
-            rxcuis = rxnorm_resp.json().get("idGroup", {}).get("rxnormId", []) or []
-            if not rxcuis:
+            results = resp.json().get("results", [])
+            if not results:
                 continue
 
-            rxcui = rxcuis[0]
-            int_url = f"https://rxnav.nlm.nih.gov/REST/interaction/interaction.json?rxcui={rxcui}"
-            int_resp = requests.get(int_url, timeout=timeout)
-            if int_resp.status_code != 200:
-                continue
+            label = results[0]
+            interaction_text = " ".join(label.get("drug_interactions", []))
+            warnings_text = " ".join(label.get("warnings", []))
+            combined_text = (interaction_text + " " + warnings_text).lower()
 
-            groups = int_resp.json().get("interactionTypeGroup", []) or []
-            for group in groups:
-                for itype in group.get("interactionType", []) or []:
-                    for pair in itype.get("interactionPair", []) or []:
-                        desc = pair.get("description", "") or ""
-                        # Only surface an interaction pair if it references one of the
-                        # OTHER drugs in the request list.
-                        if any(
-                            other in desc.lower()
-                            for other in drugs_lower
-                            if other != drug.lower()
-                        ):
-                            interactions.append(
-                                {
-                                    "drugs": drug_names,
-                                    "description": desc,
-                                    "severity": pair.get("severity", "Unknown"),
-                                }
-                            )
+            # Drug class synonyms for broader matching
+            drug_class_map = {
+                "amoxicillin": ["amoxicillin", "antibiotic", "penicillin", "beta-lactam"],
+                "azithromycin": ["azithromycin", "antibiotic", "macrolide"],
+                "doxycycline": ["doxycycline", "antibiotic", "tetracycline"],
+                "ciprofloxacin": ["ciprofloxacin", "antibiotic", "fluoroquinolone"],
+                "warfarin": ["warfarin", "anticoagulant", "coumadin"],
+                "clopidogrel": ["clopidogrel", "antiplatelet"],
+                "aspirin": ["aspirin", "antiplatelet", "salicylate"],
+                "ibuprofen": ["ibuprofen", "nsaid", "anti-inflammatory"],
+            }
+
+            # Check if any of the other queried drugs are mentioned
+            for other_drug in drugs_lower:
+                if other_drug == drug.lower():
+                    continue
+                # Get all terms to search for (exact name + class synonyms)
+                search_terms = drug_class_map.get(other_drug, [other_drug])
+                matched_term = next((t for t in search_terms if t in combined_text), None)
+                if matched_term:
+                    # Extract the relevant sentence
+                    sentences = re.split(r'(?<=[.!?])\s+', interaction_text)
+                    relevant = [s for s in sentences if matched_term in s.lower()]
+                    desc = relevant[0] if relevant else (
+                        f"{drug.capitalize()} may interact with {other_drug}. "
+                        "Consult prescribing information for complete details."
+                    )
+                    interactions.append({
+                        "drugs": drug_names,
+                        "description": desc[:300],
+                        "severity": "Moderate - consult prescribing information",
+                    })
+
         except requests.RequestException as exc:
-            print(f"  RxNorm lookup failed for '{drug}': {exc}")
+            print(f"  OpenFDA lookup failed for '{drug}': {exc}")
             continue
 
     # Dedupe by description

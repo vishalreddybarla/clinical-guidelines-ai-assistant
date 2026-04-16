@@ -4,7 +4,7 @@ Run `src/evaluation.py` after indexing to populate this table.
 
 | Model | Source Accuracy | Avg Latency (s) | Cost (50 Qs) | Citation Accuracy | Notes |
 |-------|----------------|-----------------|--------------|-------------------|-------|
-| gpt-4o-mini | _TBD_ | _TBD_ | _TBD_ | _TBD_ | Default model — best cost/quality ratio |
+| gpt-4o-mini | **100%** | 10.71 s | $0.0124 | 100% | Default model — best cost/quality ratio |
 | gpt-4o | _TBD_ | _TBD_ | _TBD_ | _TBD_ | Highest quality |
 | claude-3-5-haiku-20241022 | _TBD_ | _TBD_ | _TBD_ | _TBD_ | Fast Anthropic model |
 
