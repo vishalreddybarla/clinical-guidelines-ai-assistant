@@ -1,0 +1,12 @@
+{
+  "id": "uspstf_breast_cancer",
+  "filename": "breast_cancer.pdf",
+  "title": "Breast Cancer: Screening - USPSTF Final Recommendation",
+  "source_organization": "U.S. Preventive Services Task Force",
+  "year": 2024,
+  "topic": "Cancer Screening",
+  "specialty": "Preventive Medicine",
+  "url": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/breast-cancer-screening",
+  "total_pages": 30,
+  "summary": "USPSTF final recommendation on breast cancer screening including the recommended age to begin screening, screening modalities, and frequency."
+}

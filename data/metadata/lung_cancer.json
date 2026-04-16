@@ -1,0 +1,12 @@
+{
+  "id": "uspstf_lung_cancer",
+  "filename": "lung_cancer.pdf",
+  "title": "Lung Cancer: Screening - USPSTF Final Recommendation",
+  "source_organization": "U.S. Preventive Services Task Force",
+  "year": 2021,
+  "topic": "Cancer Screening",
+  "specialty": "Preventive Medicine",
+  "url": "https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/lung-cancer-screening",
+  "total_pages": 25,
+  "summary": "USPSTF final recommendation on lung cancer screening with annual low-dose CT for high-risk adults, including smoking history and age eligibility."
+}
