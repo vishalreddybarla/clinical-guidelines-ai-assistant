@@ -1,4 +1,4 @@
-# 🏥 Clinical Guidelines AI Assistant
+#  Clinical Guidelines AI Assistant
 
 A **RAG-powered AI assistant** that answers clinical questions by searching through WHO, NIH, AHA, CDC, and USPSTF clinical guidelines — returning accurate, sourced answers with exact citations.
 
@@ -9,11 +9,11 @@ A **RAG-powered AI assistant** that answers clinical questions by searching thro
 Doctors spend 15–20 minutes searching through lengthy PDF guidelines to find specific recommendations. This system answers clinical questions instantly with page-level source references, allowing clinicians to focus on patient care rather than document hunting.
 
 **Covered guidelines:**
-- 🩺 WHO Hypertension Treatment Guidelines (2021)
-- 💉 ADA Standards of Care in Diabetes 2024 (Pharmacologic Treatment)
-- ❤️ AHA/ACC Heart Failure Guidelines 2022
-- 🦠 CDC STI Treatment Guidelines 2021
-- 🔬 USPSTF Cancer Screening Recommendations
+-  WHO Hypertension Treatment Guidelines (2021)
+-  ADA Standards of Care in Diabetes 2024 (Pharmacologic Treatment)
+-  AHA/ACC Heart Failure Guidelines 2022
+-  CDC STI Treatment Guidelines 2021
+-  USPSTF Cancer Screening Recommendations
 
 ---
 
